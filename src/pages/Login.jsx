@@ -1,25 +1,19 @@
-import { useState, useContext } from "react";
-import { Form, Input, message } from "antd";
-import {
-  FormStyle,
-  Title,
-  BodyLogin,
-  BtnLogin,
-  TextWrong,
-} from "./login.style";
-import { Login } from "../service/auth";
+import React, { useState, useContext } from "react";
+import { Button, Checkbox, Form, Input, Card } from "antd";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/userContext";
+import { Login } from "../service/auth";
 
-function Loginform() {
+const App = () => {
   const [text, setText] = useState(false);
-  const { setUser, user } = useContext(UserContext)
+  const { setUser, user } = useContext(UserContext);
   const navigate = useNavigate();
+
   const onFinish = async (values) => {
     const data = { password: values?.password, username: values?.username };
-    const res = await Login('/login', data);
+    const res = await Login("/login", data);
+
     if (res?.data?.code === 200) {
-      console.log('user', user)
       setText(false);
       navigate("/");
       window.location.reload();
@@ -28,80 +22,57 @@ function Loginform() {
     }
   };
 
-  const onFinishFailed = (errorInfo) => { };
-  const stylesIcons = {
-    width: "60px",
-    fontSize: "60px",
-    opacity: "0.8",
-  };
-
   return (
-    <BodyLogin>
-      <FormStyle>
-        <Title>
-          {/* <img src={IconUser} alt="Icon" style={stylesIcons} /> */}
-          <br />
-          <p style={{ margin: "10px" }}>LOG IN</p>
-        </Title>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+      }}
+    >
+      <Card style={{ width: "40%" }}>
         <Form
           name="basic"
+          labelCol={{ span: 8 }}
+          wrapperCol={{ span: 16 }}
+          initialValues={{ remember: true }}
           onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
           <Form.Item
+            label="Username"
             name="username"
-            rules={[
-              {
-                required: true,
-                message: "Please input your username!",
-              },
-              {
-                max: 100,
-                message: "Characters must not exceed 100",
-              },
-              {
-                pattern: new RegExp(/^[A-Za-z@0-9ก-๙ ]*$/g),
-                message: "Format is wrong",
-              },
-            ]}
+            rules={[{ required: true, message: "Please input your username!" }]}
           >
             <Input placeholder="Username" />
           </Form.Item>
           <Form.Item
+            label="Password"
             name="password"
-            rules={[
-              {
-                required: true,
-                message: "Please input your password!",
-              },
-              {
-                min: 8,
-                message: "Password must have at least 8 characters",
-              },
-              {
-                pattern: new RegExp(/^[A-Za-z0-9 ]*$/g),
-                message: "Format is wrong",
-              },
-            ]}
+            rules={[{ required: true, message: "Please input your password!" }]}
           >
             <Input.Password placeholder="Password" />
           </Form.Item>
-          {text && <TextWrong>Invalid username or password !</TextWrong>}
+          {text && (
+            <p style={{ color: "red" }}>Invalid username or password!</p>
+          )}
           <Form.Item
-            wrapperCol={{
-              offset: 5,
-              span: 14,
-            }}
+            name="remember"
+            valuePropName="checked"
+            wrapperCol={{ offset: 8, span: 16 }}
           >
-            <BtnLogin type="primary" htmlType="submit" className="btn-save">
-              LOG IN
-            </BtnLogin>
+            <Checkbox>Remember me</Checkbox>
+          </Form.Item>
+          <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
           </Form.Item>
         </Form>
-      </FormStyle>
-    </BodyLogin>
+      </Card>
+    </div>
   );
-}
+};
 
-export default Loginform;
+export default App;

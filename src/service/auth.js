@@ -1,5 +1,5 @@
 import axios from "axios";
-const env = import.meta.env.VITE_APP_BASEURL
+const env = import.meta.env.VITE_APP_AUTH
 
 const defaultOptions = {
   baseURL: env,
