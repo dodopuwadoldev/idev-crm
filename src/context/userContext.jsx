@@ -2,7 +2,6 @@ import { createContext } from "react";
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { getMe } from "../service/collection";
-// import { handleLogout } from "components/Menu";
 export const UserContext = createContext(null);
 
 const UserProvider = ({ children }) => {

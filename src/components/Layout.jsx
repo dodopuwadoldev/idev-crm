@@ -1,30 +1,34 @@
+import React, { useEffect, useState, useContext, startTransition } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Suspense, useEffect, useState } from "react";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   TeamOutlined,
   HomeOutlined,
   LogoutOutlined,
+  BulbTwoTone,
 } from "@ant-design/icons";
-
-import { Layout, Menu, Button, theme } from "antd";
+import { Layout, Menu, Button } from "antd";
 import { handleLogout } from "../service/collection";
 import { staffs } from "./../schema/index";
+import { ColorModeContext } from "../context/Themecontext";
 const { Header, Sider, Content } = Layout;
+
 const LayoutComponent = () => {
   const navigate = useNavigate();
   const pathName = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [seletPath, setSelectPath] = useState("/");
-  const [setmode, setMode] = useState();
-  const {
-    token: { colorBgContainer, colorPrimary, colorPrimaryTextActive },
-  } = theme.useToken();
-  const colorBg = "#FFFFFF";
+  const { mode, setMode } = useContext(ColorModeContext);
+
   useEffect(() => {
     setSelectPath(pathName.pathname);
   }, [pathName]);
+
+  const toggleMode = () => {
+    const newMode = mode === "light" ? "dark" : "light";
+    setMode(newMode);
+  };
 
   return (
     <Layout style={{ height: "100%" }}>
@@ -32,32 +36,24 @@ const LayoutComponent = () => {
         trigger={null}
         collapsible
         collapsed={collapsed}
-        style={
-          {
-            // mode === 'light'? colorBg: colorPrimaryTextActive,
-          }
-        }
+        style={{
+          backgroundColor: mode === "light" ? "#FFFFFF" : "#333333",
+          color: mode === "light" ? "#000000" : "#FFFFFF",
+        }}
       >
         <div className="demo-logo-vertical" />
         <Menu
           mode="inline"
           onClick={({ key }) => {
-            console.log("key", key);
-            setSelectPath(key);
-            navigate(key);
+            startTransition(() => {
+              setSelectPath(key);
+              navigate(key);
+            });
           }}
           selectedKeys={[seletPath]}
           items={[
-            {
-              key: "/",
-              icon: <HomeOutlined />,
-              label: "Home",
-            },
-            {
-              key: "/staffs",
-              icon: <TeamOutlined />,
-              label: "Staffs",
-            },
+            { key: "/", icon: <HomeOutlined />, label: "Home" },
+            { key: "/staffs", icon: <TeamOutlined />, label: "Staffs" },
           ]}
         />
         <Menu
@@ -65,20 +61,14 @@ const LayoutComponent = () => {
           onClick={() => {
             handleLogout();
           }}
-          items={[
-            {
-              key: "Logout",
-              icon: <LogoutOutlined />,
-              label: "Logout",
-            },
-          ]}
+          items={[{ key: "Logout", icon: <LogoutOutlined />, label: "Logout" }]}
         />
       </Sider>
       <Layout>
         <Header
           style={{
-            padding: 0,
-            background: colorBgContainer,
+            backgroundColor: mode === "light" ? "#FFFFFF" : "#333333",
+            color: mode === "light" ? "#000000" : "#FFFFFF",
           }}
         >
           <Button
@@ -89,24 +79,27 @@ const LayoutComponent = () => {
               fontSize: "16px",
               width: 64,
               height: 64,
+              color: mode === "light" ? "#000000" : "#FFFFFF",
             }}
           />
+          <Button onClick={toggleMode}>
+            DarkMode
+            <BulbTwoTone />
+          </Button>
         </Header>
         <Content
           style={{
             margin: "24px 16px",
             padding: 24,
             minHeight: 280,
-            background: colorBgContainer,
             overflow: "auto",
           }}
         >
-          <Suspense fallback={<div>Loading.....</div>}>
-            <Outlet />
-          </Suspense>
+          <Outlet />
         </Content>
       </Layout>
     </Layout>
   );
 };
+
 export default LayoutComponent;

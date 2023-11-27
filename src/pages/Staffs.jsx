@@ -8,16 +8,17 @@ import {
   message,
   Popconfirm,
   ConfigProvider,
+  Typography,
 } from "antd";
 import { getList, putData, deleteData, postData } from "../service/collection";
 import { staffs } from "./../schema/index";
-
+import { EditTwoTone,} from "@ant-design/icons";
 export default function Staffs() {
   const [listStaffs, setListStaffs] = useState([]);
   const [dataRow, setDataRow] = useState(null);
   const [form] = Form.useForm();
   const [openCreate, setOpenCreate] = useState(false);
-
+  const { Title, Paragraph, Text } = Typography;
   useEffect(() => {
     handleGetList();
   }, []);
@@ -90,14 +91,18 @@ export default function Staffs() {
 
   return (
     <>
-      <div><h2>STAFFS</h2></div>
+      <div>
+        <Paragraph>
+          <Title level={2}>STAFFS</Title>
+        </Paragraph>
+      </div>
       <Button
         onClick={() => {
           setOpenCreate(true);
         }}
         style={{ margin: "8px" }}
       >
-        Create
+        CREATE<EditTwoTone />
       </Button>
       <Table
         pagination={false}
